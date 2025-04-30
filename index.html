@@ -3,92 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Porn Meta Search</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+  <title>GoonerBrain - Porn Meta Search</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      background-color: #fff;
-      color: #222;
-      padding: 2rem;
-    }
-
-    .wrapper {
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
-
-    label {
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-      display: block;
-      text-align: left;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 0.8rem;
-      margin-bottom: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 1rem;
-    }
-
-    .btn {
-      width: 100%;
-      padding: 0.8rem;
-      font-size: 1rem;
-      border: none;
-      border-radius: 8px;
-      margin-top: 0.5rem;
-      cursor: pointer;
-    }
-
-    .btn-search {
-      background-color: #ff2e63;
-      color: white;
-    }
-
-    .btn-leak {
-      background-color: #ffe600;
-      color: #222;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .subtext {
-      font-size: 0.85rem;
-      color: #777;
-      margin-bottom: 1rem;
+    body { font-family: 'Inter', sans-serif; }
+    .animate-fade { animation: fadeIn 0.8s ease-in-out; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
-  <div class="wrapper">
-    <h1>Porn Meta Search 🔍</h1>
-    <div class="subtext">Search over 40 million videos from top sites</div>
-    <label for="lang">Choose Language:</label>
-    <input type="text" id="lang" placeholder="e.g. English, Spanish" />
+<body class="bg-white text-gray-900 min-h-screen flex flex-col items-center px-4 py-10 space-y-10">
 
-    <label for="query">Search:</label>
-    <input type="text" id="query" placeholder="e.g. OnlyFans, Johnny Sins..." />
-
-    <button class="btn btn-search">Search</button>
-    <button class="btn btn-leak">🌐 Get Free OnlyFans Leaks</button>
+  <div class="text-center animate-fade">
+    <h1 class="text-4xl font-extrabold tracking-tight text-pink-600">GoonerBrain 🔍</h1>
+    <p class="text-sm text-gray-500 mt-1">Search over 40 million videos from top sites</p>
   </div>
+
+  <div class="w-full max-w-xl animate-fade">
+    <input
+      id="searchInput"
+      type="text"
+      placeholder="e.g. OnlyFans, Johnny Sins, stepmom..."
+      class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all"
+    />
+    <button
+      onclick="handleSearch()"
+      class="mt-4 w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg"
+    >Search</button>
+    <p id="warning" class="text-red-500 text-sm mt-3 hidden">❌ This search is blocked. Try a different keyword.</p>
+  </div>
+
+  <div class="w-full max-w-4xl space-y-10 mt-12 animate-fade">
+    <div>
+      <h2 class="text-xl font-semibold text-gray-700 mb-3">🔥 Trending Searches</h2>
+      <div class="flex flex-wrap gap-3 text-sm text-gray-700">
+        <span class="bg-gray-100 px-3 py-1 rounded-full">stepmom</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">casting couch</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">latina</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">japanese uncensored</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">myfans</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">pov</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">anal</span>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-xl font-semibold text-gray-700 mb-3">📊 Popular Categories</h2>
+      <div class="flex flex-wrap gap-3 text-sm text-gray-800">
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Big Tits</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Threesome</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Amateur</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Massage</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Teen 18+</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">MILF</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Anal</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="text-xs text-gray-400 mt-20 animate-fade">
+    © 2025 GoonerBrain. All rights reserved.
+  </footer>
+
+  <script>
+    const bannedTerms = ["loli", "rape", "child", "pedo", "incest", "cp"];
+
+    function handleSearch() {
+      const input = document.getElementById("searchInput").value.toLowerCase();
+      const warning = document.getElementById("warning");
+
+      if (bannedTerms.some(term => input.includes(term))) {
+        warning.classList.remove("hidden");
+        return;
+      }
+
+      warning.classList.add("hidden");
+      // Replace below with your search logic / redirection
+      alert("Search: " + input);
+    }
+  </script>
 </body>
 </html>
