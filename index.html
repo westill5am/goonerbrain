@@ -42,7 +42,7 @@
     async function search() {
       const q = document.getElementById("query").value;
       const lang = document.getElementById("lang").value;
-      const res = await fetch(`http://localhost:8000/search?keyword=${encodeURIComponent(q + ' ' + lang)}`);
+const res = await fetch(`https://goonerbrain.onrender.com/search?keyword=${encodeURIComponent(q + ' ' + lang)}`);
       const data = await res.json();
 
       const container = document.getElementById("results");
