@@ -1,61 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Porn Search Engine</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Porn Meta Search</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
   <style>
-    body { background-color: #0f0f0f; color: white; }
-    input, button { color: black; }
-    .ad-banner {
-      background: #ff0066;
-      padding: 10px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: #fff;
+      color: #222;
+      padding: 2rem;
+    }
+
+    .wrapper {
+      max-width: 600px;
+      margin: 0 auto;
       text-align: center;
-      margin-top: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      display: block;
+      text-align: left;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
       border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      cursor: pointer;
+    }
+
+    .btn-search {
+      background-color: #ff2e63;
+      color: white;
+    }
+
+    .btn-leak {
+      background-color: #ffe600;
+      color: #222;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .subtext {
+      font-size: 0.85rem;
+      color: #777;
+      margin-bottom: 1rem;
     }
   </style>
 </head>
-<body class="p-4">
-  <div class="max-w-xl mx-auto">
-    <h1 class="text-2xl font-bold mb-4 text-center">Porn Meta Search 🔍</h1>
-    
-    <label class="text-sm">Choose Language:</label>
-    <select id="lang" class="w-full p-1 mb-2">
-      <option value="en">English</option>
-      <option value="es">Spanish</option>
-      <option value="de">German</option>
-    </select>
+<body>
+  <div class="wrapper">
+    <h1>Porn Meta Search 🔍</h1>
+    <div class="subtext">Search over 40 million videos from top sites</div>
+    <label for="lang">Choose Language:</label>
+    <input type="text" id="lang" placeholder="e.g. English, Spanish" />
 
-    <input id="query" type="text" placeholder="Search..." class="w-full p-2 rounded mb-2">
-    <button onclick="search()" class="w-full bg-pink-600 p-2 rounded">Search</button>
+    <label for="query">Search:</label>
+    <input type="text" id="query" placeholder="e.g. OnlyFans, Johnny Sins..." />
 
-    <div class="ad-banner">
-      🔞 <a href="https://affiliates.example.com?id=123" target="_blank">Get Free OnlyFans Leaks</a>
-    </div>
-
-    <div id="results" class="mt-6 space-y-4"></div>
+    <button class="btn btn-search">Search</button>
+    <button class="btn btn-leak">🌐 Get Free OnlyFans Leaks</button>
   </div>
-
-  <script>
-    async function search() {
-      const q = document.getElementById("query").value;
-      const lang = document.getElementById("lang").value;
-const res = await fetch(`https://goonerbrain.onrender.com/search?keyword=${encodeURIComponent(q + ' ' + lang)}`);
-      const data = await res.json();
-
-      const container = document.getElementById("results");
-      container.innerHTML = data.results.map(r => `
-        <a href="${r.link}" target="_blank">
-          <div class="bg-gray-800 p-2 rounded hover:bg-gray-700">
-            <img src="${r.thumb}" class="w-full rounded">
-            <p class="mt-2 font-semibold">${r.title}</p>
-            <p class="text-sm text-gray-400">${r.source}</p>
-          </div>
-        </a>
-      `).join('');
-    }
-  </script>
 </body>
 </html>
