@@ -2,7 +2,21 @@ import requests
 from bs4 import BeautifulSoup
 import random
 import time
+import asyncio
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Proxy and headers
 proxies = [
     "http://user:pass@proxy1:port",
     "http://user:pass@proxy2:port",
@@ -24,7 +38,6 @@ def get(url):
         return None
 
 # Template scraper
-
 def generic_scraper(config, keyword, page=1):
     url = config['url'].format(keyword=keyword, page=page)
     r = get(url)
@@ -41,6 +54,7 @@ def generic_scraper(config, keyword, page=1):
             continue
     return results
 
+# Scraper config
 scraper_configs = [
     {
         'name': 'Redtube',
@@ -51,5 +65,21 @@ scraper_configs = [
         'thumb': 'img',
         'base': 'https://www.redtube.com'
     },
-    # Add 1000+ entries here for scale
+    # Add more sites here...
 ]
+
+# Async scrape
+async def scrape_all(keyword):
+    loop = asyncio.get_event_loop()
+    tasks = [
+        loop.run_in_executor(None, generic_scraper, config, keyword) for config in scraper_configs
+    ]
+    results = await asyncio.gather(*tasks)
+    merged = [item for sublist in results for item in sublist]
+    return merged
+
+# API endpoint
+@app.get("/search")
+async def search_all(keyword: str = Query(...)):
+    data = await scrape_all(keyword)
+    return {"results": data}
