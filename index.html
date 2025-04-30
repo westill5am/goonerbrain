@@ -39,13 +39,11 @@
     <div>
       <h2 class="text-xl font-semibold text-gray-700 mb-3">🔥 Trending Searches</h2>
       <div class="flex flex-wrap gap-3 text-sm text-gray-700">
-        <span class="bg-gray-100 px-3 py-1 rounded-full">stepmom</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">casting couch</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">latina</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">japanese uncensored</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">myfans</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">pov</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full">anal</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('stepmom')">stepmom</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('casting couch')">casting couch</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('latina')">latina</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('japanese uncensored')">japanese uncensored</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('pov')">pov</span>
       </div>
     </div>
 
@@ -56,12 +54,14 @@
         <span class="bg-pink-100 px-3 py-1 rounded-full">Threesome</span>
         <span class="bg-pink-100 px-3 py-1 rounded-full">Amateur</span>
         <span class="bg-pink-100 px-3 py-1 rounded-full">Massage</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Teen 18+</span>
         <span class="bg-pink-100 px-3 py-1 rounded-full">MILF</span>
         <span class="bg-pink-100 px-3 py-1 rounded-full">Anal</span>
+        <span class="bg-pink-100 px-3 py-1 rounded-full">Teen 18+</span>
       </div>
     </div>
   </div>
+
+  <div id="results" class="w-full max-w-4xl mt-12 space-y-4 animate-fade"></div>
 
   <footer class="text-xs text-gray-400 mt-20 animate-fade">
     © 2025 GoonerBrain. All rights reserved.
@@ -69,19 +69,47 @@
 
   <script>
     const bannedTerms = ["loli", "rape", "child", "pedo", "incest", "cp"];
+    const api = "https://goonerbrain-api.onrender.com/search";
 
-    function handleSearch() {
-      const input = document.getElementById("searchInput").value.toLowerCase();
+    function fillSearch(term) {
+      document.getElementById("searchInput").value = term;
+      handleSearch();
+    }
+
+    async function handleSearch() {
+      const input = document.getElementById("searchInput").value.trim().toLowerCase();
       const warning = document.getElementById("warning");
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "";
 
-      if (bannedTerms.some(term => input.includes(term))) {
+      if (!input || bannedTerms.some(term => input.includes(term))) {
         warning.classList.remove("hidden");
         return;
       }
 
       warning.classList.add("hidden");
-      // Replace below with your search logic / redirection
-      alert("Search: " + input);
+
+      resultsDiv.innerHTML = `<p class="text-sm text-gray-500">Searching <b>${input}</b>...</p>`;
+
+      try {
+        const res = await fetch(`${api}?q=${encodeURIComponent(input)}`);
+        const data = await res.json();
+
+        if (!data.results || data.results.length === 0) {
+          resultsDiv.innerHTML = `<p class="text-red-500 mt-2">No results found.</p>`;
+          return;
+        }
+
+        resultsDiv.innerHTML = data.results.map(item => `
+          <a href="${item.url}" target="_blank" class="block bg-white border border-gray-200 rounded-xl p-4 shadow hover:shadow-md transition">
+            <h3 class="text-lg font-semibold text-pink-600">${item.title}</h3>
+            <p class="text-sm text-gray-500">${item.source} • ${item.duration}</p>
+          </a>
+        `).join("");
+      } catch (err) {
+        resultsDiv.innerHTML = `<p class="text-red-500">Error fetching results.</p>`;
+        console.error(err);
+      }
     }
   </script>
 </body>
