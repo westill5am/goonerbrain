@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GoonerBrain Meta Search</title>
   <style>
     body {
@@ -41,7 +42,10 @@
     .card:hover {
       transform: scale(1.03);
     }
-    .card img {
+    .card img, .card video {
+      background-color: #111;
+      object-fit: cover;
+      min-height: 160px;
       width: 100%;
       height: auto;
       display: block;
@@ -87,15 +91,21 @@
           return;
         }
 
-        results.innerHTML = data.map(video => `
-          <div class="card">
-            <a href="${video.url}" target="_blank">
-              <img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">
-              <h3>${video.title}</h3>
-              <p>${video.source}</p>
-            </a>
-          </div>
-        `).join('');
+        results.innerHTML = data.map(video => {
+          const isVideo = video.preview && video.preview.endsWith('.mp4');
+          return `
+            <div class="card">
+              <a href="${video.url}" target="_blank">
+                ${isVideo
+                  ? `<video src="${video.preview}" muted loop preload="none" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
+                  : `<img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">`
+                }
+                <h3>${video.title}</h3>
+                <p>${video.source}</p>
+              </a>
+            </div>
+          `;
+        }).join('');
       } catch (err) {
         results.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
       }
