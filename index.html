@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GoonerBrain Meta Search</title>
   <style>
     body {
@@ -10,97 +11,114 @@
       background: #0d0d0d;
       color: white;
       margin: 0;
-      padding: 20px;
-    }
-    h1 {
+      padding: 40px;
       text-align: center;
+    }
+
+    h1 {
       color: #f05eff;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
     }
+
     #search {
-      width: 100%;
+      width: 60%;
       max-width: 600px;
-      padding: 12px;
-      font-size: 18px;
+      padding: 15px;
+      font-size: 1.2rem;
       border: none;
-      border-radius: 6px;
-      margin: 20px auto;
-      display: block;
+      border-radius: 10px;
+      outline: none;
     }
+
     #results {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 20px;
       margin-top: 30px;
     }
+
     .card {
       background: #1c1c1c;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);
-      transition: transform 0.3s;
+      border: 1px solid #3a3a3a;
+      border-radius: 10px;
+      padding: 10px;
+      width: 300px;
+      box-shadow: 0 0 10px rgba(240, 94, 255, 0.3);
+      transition: transform 0.2s;
     }
+
     .card:hover {
       transform: scale(1.03);
     }
-    .card img, .card video {
-      background-color: #111;
-      object-fit: cover;
-      min-height: 160px;
+
+    .card video {
       width: 100%;
-      height: auto;
-      display: block;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 6px;
     }
-    .card h3 {
-      margin: 10px;
-      font-size: 16px;
-      color: #fff;
-    }
+
     .card p {
-      margin: 0 10px 10px;
-      color: #ccc;
-      font-size: 14px;
+      margin: 10px 0 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #f05eff;
+    }
+
+    .card a {
+      color: #00ffe1;
+      text-decoration: none;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
   <h1>GoonerBrain Meta Search</h1>
-  <input id="search" type="text" placeholder="Search videos...">
+  <input id="search" type="text" placeholder="Search video terms..." />
   <div id="results"></div>
+
   <script>
-    const input = document.getElementById('search');
-    const results = document.getElementById('results');
+    const searchInput = document.getElementById("search");
+    const resultsDiv = document.getElementById("results");
 
-    async function handleSearch() {
-      const query = input.value.trim();
-      if (!query) return;
-      results.innerHTML = '<p>Searching...</p>';
-      try {
-        const res = await fetch(`https://goonerbrain-backend.onrender.com/api/search?q=${encodeURIComponent(query)}`);
-        const data = await res.json();
+    searchInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter") {
+        const query = searchInput.value.trim();
+        if (!query) return;
 
-        results.innerHTML = data.map(video => {
-          const isVideo = video.preview && video.preview.endsWith('.mp4');
-          return \`
-            <div class="card">
-              <a href="\${video.url}" target="_blank">
-                \${isVideo
-                  ? \`<video src="\${video.preview}" muted loop preload="none"
-                      onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;">
-                    </video>\`
-                  : \`<img src="\${video.preview || 'https://via.placeholder.com/300x160'}" alt="\${video.title}">\`
-                }
-                <h3>\${video.title}</h3>
-                <p>\${video.source}</p>
-              </a>
-            </div>
-          \`;
-        }).join('');
-      } catch (err) {
-        results.innerHTML = \`<p style="color: red;">Error: \${err.message}</p>\`;
+        resultsDiv.innerHTML = "<p>Searching…</p>";
+
+        try {
+          const res = await fetch(`https://goonerbrain-backend.onrender.com/search?query=${encodeURIComponent(query)}`);
+          const data = await res.json();
+
+          if (!data.length) {
+            resultsDiv.innerHTML = "<p>No results found.</p>";
+            return;
+          }
+
+          resultsDiv.innerHTML = "";
+          data.forEach(item => {
+            const el = document.createElement("div");
+            el.className = "card";
+            el.innerHTML = \`
+              <video src="\${item.preview}" poster="" muted loop preload="none"
+                onmouseover="this.play()" 
+                onmouseout="this.pause(); this.currentTime = 0;">
+                <source src="\${item.preview}" type="video/mp4" />
+              </video>
+              <p>\${item.title}</p>
+              <a href="\${item.url}" target="_blank">Watch on \${item.source}</a>
+            \`;
+            resultsDiv.appendChild(el);
+          });
+        } catch (err) {
+          resultsDiv.innerHTML = \`<p>Error: \${err.message}</p>\`;
+          console.error(err);
+        }
       }
-    }
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleSearch();
     });
   </script>
 </body>
