@@ -1,44 +1,62 @@
-<script>
-    const input = document.getElementById('search');
-    const results = document.getElementById('results');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GoonerBrain</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 2rem auto; }
+        .card { margin: 1rem 0; padding: 1rem; border: 1px solid #ccc; border-radius: 8px; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+    <h1>GoonerBrain Meta Search</h1>
+    <input id="search" placeholder="Search videos..." style="width: 100%; padding: 0.5rem;" />
+    <div id="results" style="margin-top: 1rem;"></div>
 
-    async function handleSearch() {
-        const query = input.value.trim();
-        if (!query) return;
+    <script>
+        const input = document.getElementById('search');
+        const results = document.getElementById('results');
 
-        results.innerHTML = '<p>Searching...</p>';
+        async function handleSearch() {
+            const query = input.value.trim();
+            if (!query) return;
 
-        try {
-            const res = await fetch(`https://goonerbrain-api.onrender.com/api/search?q=${encodeURIComponent(query)}`);
-            const data = await res.json();
+            results.innerHTML = '<p>Searching...</p>';
 
-            if (data.error) {
-                results.innerHTML = `<p>Error: ${data.error}</p>`;
-                return;
+            try {
+                const res = await fetch(`https://goonerbrain-api.onrender.com/api/search?q=${encodeURIComponent(query)}`);
+                const data = await res.json();
+
+                if (data.error) {
+                    results.innerHTML = `<p>Error: ${data.error}</p>`;
+                    return;
+                }
+
+                if (!data.length) {
+                    results.innerHTML = '<p>No results found.</p>';
+                    return;
+                }
+
+                results.innerHTML = data.map(video => {
+                    return `
+                        <div class="card">
+                            <a href="${video.url}" target="_blank">
+                                <img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">
+                                <h3>${video.title}</h3>
+                                <p>${video.source}</p>
+                            </a>
+                        </div>
+                    `;
+                }).join('');
+            } catch (err) {
+                results.innerHTML = `<p>Error: ${err.message}</p>`;
             }
-
-            if (!data.length) {
-                results.innerHTML = '<p>No results found.</p>';
-                return;
-            }
-
-            results.innerHTML = data.map(video => {
-                return `
-                    <div class="card">
-                        <a href="${video.url}" target="_blank">
-                            <img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">
-                            <h3>${video.title}</h3>
-                            <p>${video.source}</p>
-                        </a>
-                    </div>
-                `;
-            }).join('');
-        } catch (err) {
-            results.innerHTML = `<p>Error: ${err.message}</p>`;
         }
-    }
 
-    input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') handleSearch();
-    });
-</script>
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleSearch();
+        });
+    </script>
+</body>
+</html>
