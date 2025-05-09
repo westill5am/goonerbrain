@@ -1,8 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GoonerBrain Meta Search</title>
   <style>
     body {
@@ -66,7 +66,6 @@
   <h1>GoonerBrain Meta Search</h1>
   <input id="search" type="text" placeholder="Search videos...">
   <div id="results"></div>
-
   <script>
     const input = document.getElementById('search');
     const results = document.getElementById('results');
@@ -74,44 +73,33 @@
     async function handleSearch() {
       const query = input.value.trim();
       if (!query) return;
-
       results.innerHTML = '<p>Searching...</p>';
-
       try {
         const res = await fetch(`https://goonerbrain-backend.onrender.com/api/search?q=${encodeURIComponent(query)}`);
         const data = await res.json();
 
-        if (data.error) {
-          results.innerHTML = `<p>Error: ${data.error}</p>`;
-          return;
-        }
-
-        if (!data.length) {
-          results.innerHTML = '<p>No results found.</p>';
-          return;
-        }
-
         results.innerHTML = data.map(video => {
           const isVideo = video.preview && video.preview.endsWith('.mp4');
-          return `
+          return \`
             <div class="card">
-              <a href="${video.url}" target="_blank">
-                ${isVideo
-                  ? `<video src="${video.preview}" muted loop preload="none" onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;"></video>`
-                  : `<img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">`
+              <a href="\${video.url}" target="_blank">
+                \${isVideo
+                  ? \`<video src="\${video.preview}" muted loop preload="none"
+                      onmouseenter="this.play()" onmouseleave="this.pause();this.currentTime=0;">
+                    </video>\`
+                  : \`<img src="\${video.preview || 'https://via.placeholder.com/300x160'}" alt="\${video.title}">\`
                 }
-                <h3>${video.title}</h3>
-                <p>${video.source}</p>
+                <h3>\${video.title}</h3>
+                <p>\${video.source}</p>
               </a>
             </div>
-          `;
+          \`;
         }).join('');
       } catch (err) {
-        results.innerHTML = `<p style="color: red;">Error: ${err.message}</p>`;
+        results.innerHTML = \`<p style="color: red;">Error: \${err.message}</p>\`;
       }
     }
-
-    input.addEventListener('keydown', (e) => {
+    input.addEventListener('keydown', e => {
       if (e.key === 'Enter') handleSearch();
     });
   </script>
