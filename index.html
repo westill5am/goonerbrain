@@ -1,116 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GoonerBrain - Porn Meta Search</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-    .animate-fade { animation: fadeIn 0.8s ease-in-out; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  </style>
-</head>
-<body class="bg-white text-gray-900 min-h-screen flex flex-col items-center px-4 py-10 space-y-10">
-
-  <div class="text-center animate-fade">
-    <h1 class="text-4xl font-extrabold tracking-tight text-pink-600">GoonerBrain 🔍</h1>
-    <p class="text-sm text-gray-500 mt-1">Search over 40 million videos from top sites</p>
-  </div>
-
-  <div class="w-full max-w-xl animate-fade">
-    <input
-      id="searchInput"
-      type="text"
-      placeholder="e.g. OnlyFans, Johnny Sins, stepmom..."
-      class="w-full px-5 py-3 border border-gray-300 rounded-xl shadow-md text-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all"
-    />
-    <button
-      onclick="handleSearch()"
-      class="mt-4 w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl transition-all shadow-lg"
-    >Search</button>
-    <p id="warning" class="text-red-500 text-sm mt-3 hidden">❌ This search is blocked. Try a different keyword.</p>
-  </div>
-
-  <div class="w-full max-w-4xl space-y-10 mt-12 animate-fade">
-    <div>
-      <h2 class="text-xl font-semibold text-gray-700 mb-3">🔥 Trending Searches</h2>
-      <div class="flex flex-wrap gap-3 text-sm text-gray-700">
-        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('stepmom')">stepmom</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('casting couch')">casting couch</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('latina')">latina</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('japanese uncensored')">japanese uncensored</span>
-        <span class="bg-gray-100 px-3 py-1 rounded-full cursor-pointer" onclick="fillSearch('pov')">pov</span>
-      </div>
-    </div>
-
-    <div>
-      <h2 class="text-xl font-semibold text-gray-700 mb-3">📊 Popular Categories</h2>
-      <div class="flex flex-wrap gap-3 text-sm text-gray-800">
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Big Tits</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Threesome</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Amateur</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Massage</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">MILF</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Anal</span>
-        <span class="bg-pink-100 px-3 py-1 rounded-full">Teen 18+</span>
-      </div>
-    </div>
-  </div>
-
-  <div id="results" class="w-full max-w-4xl mt-12 space-y-4 animate-fade"></div>
-
-  <footer class="text-xs text-gray-400 mt-20 animate-fade">
-    © 2025 GoonerBrain. All rights reserved.
-  </footer>
-
-  <script>
-    const bannedTerms = ["loli", "rape", "child", "pedo", "incest", "cp"];
-    const api = "https://goonerbrain-api.onrender.com/search";
-
-    function fillSearch(term) {
-      document.getElementById("searchInput").value = term;
-      handleSearch();
-    }
+<script>
+    const input = document.getElementById('search');
+    const results = document.getElementById('results');
 
     async function handleSearch() {
-      const input = document.getElementById("searchInput").value.trim().toLowerCase();
-      const warning = document.getElementById("warning");
-      const resultsDiv = document.getElementById("results");
-      resultsDiv.innerHTML = "";
+        const query = input.value.trim();
+        if (!query) return;
 
-      if (!input || bannedTerms.some(term => input.includes(term))) {
-        warning.classList.remove("hidden");
-        return;
-      }
+        results.innerHTML = '<p>Searching...</p>';
 
-      warning.classList.add("hidden");
+        try {
+            const res = await fetch(`https://goonerbrain-api.onrender.com/api/search?q=${encodeURIComponent(query)}`);
+            const data = await res.json();
 
-      resultsDiv.innerHTML = `<p class="text-sm text-gray-500">Searching <b>${input}</b>...</p>`;
+            if (data.error) {
+                results.innerHTML = `<p>Error: ${data.error}</p>`;
+                return;
+            }
 
-      try {
-        const res = await fetch(`${api}?q=${encodeURIComponent(input)}`);
-        const data = await res.json();
+            if (!data.length) {
+                results.innerHTML = '<p>No results found.</p>';
+                return;
+            }
 
-        if (!data.results || data.results.length === 0) {
-          resultsDiv.innerHTML = `<p class="text-red-500 mt-2">No results found.</p>`;
-          return;
+            results.innerHTML = data.map(video => {
+                return `
+                    <div class="card">
+                        <a href="${video.url}" target="_blank">
+                            <img src="${video.preview || 'https://via.placeholder.com/300x160'}" alt="${video.title}">
+                            <h3>${video.title}</h3>
+                            <p>${video.source}</p>
+                        </a>
+                    </div>
+                `;
+            }).join('');
+        } catch (err) {
+            results.innerHTML = `<p>Error: ${err.message}</p>`;
         }
-
-        resultsDiv.innerHTML = data.results.map(item => `
-          <a href="${item.url}" target="_blank" class="block bg-white border border-gray-200 rounded-xl p-4 shadow hover:shadow-md transition">
-            <h3 class="text-lg font-semibold text-pink-600">${item.title}</h3>
-            <p class="text-sm text-gray-500">${item.source} • ${item.duration}</p>
-          </a>
-        `).join("");
-      } catch (err) {
-        resultsDiv.innerHTML = `<p class="text-red-500">Error fetching results.</p>`;
-        console.error(err);
-      }
     }
-  </script>
-</body>
-</html>
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleSearch();
+    });
+</script>
