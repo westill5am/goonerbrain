@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,13 +94,13 @@
           const res = await fetch(`https://goonerbrain-backend.onrender.com/search?query=${encodeURIComponent(query)}`);
           const data = await res.json();
 
-          if (!data.length) {
+          if (!data.results || !data.results.length) {
             resultsDiv.innerHTML = "<p>No results found.</p>";
             return;
           }
 
           resultsDiv.innerHTML = "";
-          data.forEach(item => {
+          data.results.forEach(item => {
             const el = document.createElement("div");
             el.className = "card";
             const isVideo = item.preview.endsWith(".mp4") || item.preview.endsWith(".webm");
