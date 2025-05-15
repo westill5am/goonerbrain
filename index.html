@@ -126,31 +126,32 @@
       }
     });
   </script>
+
+  <!-- ✅ TRACKING SCRIPT -->
   <script>
-(async () => {
-  const user_id = localStorage.getItem("uid") || crypto.randomUUID();
-  localStorage.setItem("uid", user_id);
+  (async () => {
+    const user_id = localStorage.getItem("uid") || crypto.randomUUID();
+    localStorage.setItem("uid", user_id);
 
-  const timeStart = Date.now();
-  let searchTerm = "";
+    const timeStart = Date.now();
+    let searchTerm = "";
 
-  document.querySelector("input[name='search']")?.addEventListener("input", e => {
-    searchTerm = e.target.value;
-  });
+    document.getElementById("search")?.addEventListener("input", e => {
+      searchTerm = e.target.value;
+    });
 
-  window.addEventListener("beforeunload", () => {
-    const timeSpent = Math.floor((Date.now() - timeStart) / 1000);
+    window.addEventListener("beforeunload", () => {
+      const timeSpent = Math.floor((Date.now() - timeStart) / 1000);
 
-    navigator.sendBeacon("https://goonerbrain-admin.onrender.com/track", JSON.stringify({
-      user_id,
-      time_spent_seconds: timeSpent,
-      search_terms: [searchTerm],
-      clicked_ad: false,
-      gender: "unknown",
-    }));
-  });
-})();
-</script>
-
+      navigator.sendBeacon("https://goonerbrain-admin.onrender.com/track", JSON.stringify({
+        user_id,
+        time_spent_seconds: timeSpent,
+        search_terms: [searchTerm || "unknown"],
+        clicked_ad: false,
+        gender: "unknown",
+      }));
+    });
+  })();
+  </script>
 </body>
 </html>
